@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>315325 — Cloud Computing | 5th Sem Diploma</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      background: #f4f6fb;
+      color: #333;
+    }
+
+    /* ===== LOGIN ===== */
+    #loginPage {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Floating clouds background */
+    .cloud-bg {
+      position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+    }
+    .cloud-bg span {
+      position: absolute;
+      font-size: 60px;
+      opacity: 0.06;
+      animation: floatCloud 20s infinite linear;
+    }
+    .cloud-bg span:nth-child(1) { top: 10%; left: 5%; animation-delay: 0s; font-size: 80px; }
+    .cloud-bg span:nth-child(2) { top: 30%; left: 70%; animation-delay: -5s; font-size: 50px; }
+    .cloud-bg span:nth-child(3) { top: 60%; left: 20%; animation-delay: -10s; font-size: 90px; }
+    .cloud-bg span:nth-child(4) { top: 80%; left: 80%; animation-delay: -15s; font-size: 40px; }
+    .cloud-bg span:nth-child(5) { top: 45%; left: 45%; animation-delay: -7s; font-size: 70px; }
+
+    @keyframes floatCloud {
+      0% { transform: translateX(-100px) translateY(0); opacity: 0.04; }
+      50% { opacity: 0.08; }
+      100% { transform: translateX(100px) translateY(-30px); opacity: 0.04; }
+    }
+
+    .login-card {
+      background: rgba(255,255,255,0.97);
+      width: 380px;
+      padding: 40px 32px;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      position: relative; z-index: 2;
+    }
+
+    .login-logo {
+      text-align: center; margin-bottom: 8px;
+    }
+    .login-logo .icon { font-size: 52px; display: block; margin-bottom: 6px; }
+    .login-logo h1 { font-size: 21px; color: #302b63; font-weight: 700; }
+    .login-logo .code { font-size: 12px; color: #999; letter-spacing: 1px; margin-top: 2px; }
+    .login-logo .sem { font-size: 13px; color: #666; margin: 4px 0 22px; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 12px; color: #555; font-weight: 600; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-group input {
+      width: 100%; padding: 11px 14px; border: 1.5px solid #e0e0e0;
+      border-radius: 10px; font-size: 14px; outline: none; transition: border-color .2s;
+      font-family: inherit;
+    }
+    .form-group input:focus { border-color: #302b63; }
+    .form-group input::placeholder { color: #bbb; }
+
+    .btn {
+      padding: 12px 20px; border: none; border-radius: 10px; font-size: 14px;
+      font-weight: 600; cursor: pointer; transition: all .2s; font-family: inherit;
+    }
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #302b63, #24243e);
+      color: #fff; width: 100%;
+      box-shadow: 0 4px 15px rgba(48,43,99,0.3);
+    }
+    .btn-primary:hover { box-shadow: 0 6px 20px rgba(48,43,99,0.4); }
+
+    .login-msg {
+      text-align: center; font-size: 13px; margin-top: 12px; padding: 8px;
+      border-radius: 8px; display: none;
+    }
+    .login-msg.show { display: block; background: #fdecea; color: #c0392b; }
+
+    /* ===== DASHBOARD ===== */
+    #dashboard { display: none; }
+
+    .navbar {
+      background: linear-gradient(135deg, #0f0c29, #302b63);
+      color: #fff; padding: 0 28px; height: 58px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.15);
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; }
+    .nav-brand .icon { font-size: 24px; }
+    .nav-brand h2 { font-size: 16px; font-weight: 600; }
+    .nav-brand span { font-size: 11px; opacity: .65; font-weight: 400; }
+    .nav-right { display: flex; align-items: center; gap: 14px; }
+    .nav-right .user { font-size: 13px; opacity: .85; }
+    .btn-logout {
+      background: rgba(255,255,255,0.12); color: #fff; border: none;
+      padding: 6px 14px; border-radius: 8px; font-size: 12px; cursor: pointer;
+      font-family: inherit; transition: background .2s;
+    }
+    .btn-logout:hover { background: rgba(255,255,255,0.22); }
+
+    /* Sidebar + Content */
+    .layout { display: flex; min-height: calc(100vh - 58px); }
+
+    .sidebar {
+      width: 220px; background: #fff; border-right: 1px solid #e8eaf0;
+      padding: 20px 0; flex-shrink: 0;
+    }
+    .sidebar .nav-label {
+      font-size: 10px; font-weight: 700; color: #999; text-transform: uppercase;
+      letter-spacing: 1px; padding: 8px 20px 6px; margin-top: 10px;
+    }
+    .sidebar .nav-item {
+      padding: 10px 20px; font-size: 13px; color: #555; cursor: pointer;
+      display: flex; align-items: center; gap: 10px; transition: all .15s;
+      border-left: 3px solid transparent;
+    }
+    .sidebar .nav-item:hover { background: #f4f6fb; color: #302b63; }
+    .sidebar .nav-item.active {
+      background: #eef0ff; color: #302b63; font-weight: 600;
+      border-left-color: #302b63;
+    }
+    .sidebar .nav-item .emoji { font-size: 16px; width: 20px; text-align: center; }
+
+    .content { flex: 1; padding: 28px 32px; max-width: 900px; }
+
+    /* Page Header */
+    .page-header {
+      margin-bottom: 24px;
+    }
+    .page-header h1 { font-size: 22px; color: #1a1a2e; margin-bottom: 4px; }
+    .page-header p { font-size: 13px; color: #888; }
+
+    /* ===== HOME PAGE ===== */
+    .hero {
+      background: linear-gradient(135deg, #302b63, #24243e);
+      color: #fff; border-radius: 14px; padding: 30px;
+      margin-bottom: 24px; position: relative; overflow: hidden;
+    }
+    .hero::after {
+      content: '☁️'; position: absolute; right: 20px; top: 50%;
+      transform: translateY(-50%); font-size: 80px; opacity: 0.12;
+    }
+    .hero h2 { font-size: 20px; margin-bottom: 4px; }
+    .hero p { font-size: 13px; opacity: .75; }
+    .hero .course-code {
+      display: inline-block; margin-top: 10px; background: rgba(255,255,255,0.15);
+      padding: 4px 12px; border-radius: 6px; font-size: 12px;
+    }
+
+    /* Stat Cards */
+    .stats {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 14px; margin-bottom: 28px;
+    }
+    .stat-card {
+      background: #fff; border-radius: 12px; padding: 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      text-align: center;
+    }
+    .stat-card .stat-icon { font-size: 28px; margin-bottom: 6px; }
+    .stat-card .stat-num { font-size: 24px; font-weight: 700; color: #302b63; }
+    .stat-card .stat-label { font-size: 11px; color: #999; margin-top: 2px; text-transform: uppercase; letter-spacing: .5px; }
+
+    /* Announcement strip */
+    .announcement {
+      background: #fff; border-radius: 10px; padding: 14px 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-bottom: 10px;
+      border-left: 4px solid #f39c12; display: flex; justify-content: space-between; align-items: center;
+    }
+    .announcement h4 { font-size: 13px; color: #333; }
+    .announcement p { font-size: 12px; color: #888; margin-top: 2px; }
+    .announcement .date { font-size: 11px; color: #bbb; white-space: nowrap; }
+
+    /* ===== UNITS / SYLLABUS ===== */
+    .unit-card {
+      background: #fff; border-radius: 14px; margin-bottom: 18px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04); overflow: hidden;
+    }
+    .unit-header {
+      padding: 18px 22px; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: background .15s;
+    }
+    .unit-header:hover { background: #f9fafd; }
+    .unit-header .left { display: flex; align-items: center; gap: 14px; }
+    .unit-num {
+      width: 42px; height: 42px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 14px; color: #fff; flex-shrink: 0;
+    }
+    .unit-header h3 { font-size: 15px; color: #1a1a2e; }
+    .unit-header .sub { font-size: 12px; color: #999; margin-top: 2px; }
+    .unit-header .arrow { font-size: 18px; color: #bbb; transition: transform .2s; }
+    .unit-header.open .arrow { transform: rotate(180deg); }
+
+    .unit-body { display: none; padding: 0 22px 20px; }
+    .unit-body.open { display: block; }
+
+    .topic-section { margin-bottom: 14px; }
+    .topic-section h4 {
+      font-size: 13px; color: #302b63; font-weight: 600;
+      margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #eef0ff;
+    }
+    .topic-list { list-style: none; padding: 0; }
+    .topic-list li {
+      font-size: 13px; color: #555; padding: 6px 0 6px 18px;
+      position: relative; line-height: 1.5;
+      border-bottom: 1px solid #f5f5f5;
+    }
+    .topic-list li::before {
+      content: ''; position: absolute; left: 0; top: 13px;
+      width: 6px; height: 6px; border-radius: 50%; background: #302b63; opacity: 0.4;
+    }
+    .topic-list li:last-child { border-bottom: none; }
+
+    .tlo-badge {
+      display: inline-block; background: #eef0ff; color: #302b63;
+      font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;
+      margin-right: 6px;
+    }
+
+    /* Unit colors */
+    .u1 { background: linear-gradient(135deg, #667eea, #764ba2); }
+    .u2 { background: linear-gradient(135deg, #f093fb, #f5576c); }
+    .u3 { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+    .u4 { background: linear-gradient(135deg, #fa709a, #fee140); }
+    .u5 { background: linear-gradient(135deg, #a18cd1, #fbc2eb); }
+
+    /* ===== NOTES PAGE ===== */
+    .note-card {
+      background: #fff; border-radius: 12px; padding: 16px 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-bottom: 12px;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: transform .15s;
+    }
+    .note-card:hover { transform: translateY(-2px); }
+    .note-info { display: flex; align-items: center; gap: 14px; }
+    .note-icon { font-size: 28px; }
+    .note-info h4 { font-size: 14px; color: #333; }
+    .note-info p { font-size: 12px; color: #999; margin-top: 2px; }
+    .btn-download {
+      background: #eef0ff; color: #302b63; border: none;
+      padding: 7px 16px; border-radius: 8px; font-size: 12px;
+      font-weight: 600; cursor: pointer; font-family: inherit;
+      transition: background .15s;
+    }
+    .btn-download:hover { background: #dde1ff; }
+
+    /* ===== PORTAL PAGES ===== */
+    table.data-table {
+      width: 100%; border-collapse: collapse; background: #fff;
+      border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      margin-bottom: 20px;
+    }
+    table.data-table th {
+      background: #302b63; color: #fff; padding: 12px 16px;
+      font-size: 12px; font-weight: 600; text-align: left;
+      text-transform: uppercase; letter-spacing: .5px;
+    }
+    table.data-table td {
+      padding: 11px 16px; font-size: 13px; border-bottom: 1px solid #f0f0f0; color: #555;
+    }
+    table.data-table tr:last-child td { border-bottom: none; }
+    table.data-table tr:hover td { background: #fafbff; }
+
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: #e8f8f0; color: #27ae60; }
+    .badge-orange { background: #fef5e7; color: #f39c12; }
+    .badge-red { background: #fdecea; color: #e74c3c; }
+
+    /* Feedback form */
+    .fb-form { background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    .fb-form label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 5px; text-transform: uppercase; letter-spacing: .5px; }
+    .fb-form select, .fb-form textarea {
+      width: 100%; padding: 10px 14px; border: 1.5px solid #e0e0e0;
+      border-radius: 10px; font-size: 14px; outline: none; font-family: inherit;
+      margin-bottom: 16px; transition: border-color .2s;
+    }
+    .fb-form select:focus, .fb-form textarea:focus { border-color: #302b63; }
+    .fb-form textarea { min-height: 100px; resize: vertical; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .content { padding: 20px 16px; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .navbar { padding: 0 16px; }
+
+      /* Mobile nav */
+      .mobile-nav {
+        display: flex !important;
+        position: fixed; bottom: 0; left: 0; right: 0;
+        background: #fff; box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+        z-index: 100; justify-content: space-around; padding: 6px 0;
+      }
+      .mobile-nav .mob-item {
+        text-align: center; padding: 6px 8px; cursor: pointer;
+        font-size: 10px; color: #888; transition: color .15s;
+      }
+      .mobile-nav .mob-item.active { color: #302b63; font-weight: 600; }
+      .mobile-nav .mob-item .emoji { font-size: 20px; display: block; margin-bottom: 2px; }
+      .content { padding-bottom: 80px; }
+    }
+
+    .mobile-nav { display: none; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- ===== LOGIN PAGE ===== -->
+<div id="loginPage">
+  <div class="cloud-bg">
+    <span>☁️</span><span>☁️</span><span>☁️</span><span>☁️</span><span>☁️</span>
+  </div>
+  <div class="login-card">
+    <div class="login-logo">
+      <span class="icon">☁️</span>
+      <h1>Cloud Computing</h1>
+      <div class="code">COURSE CODE: 315325</div>
+      <div class="sem">5th Semester — Diploma (K Scheme)</div>
+    </div>
+    <form id="loginForm">
+      <div class="form-group">
+        <label>Student ID / Enrollment No.</label>
+        <input type="text" id="studentId" placeholder="e.g. 2024CS001" required />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="Enter your password" required />
+      </div>
+      <button type="submit" class="btn btn-primary">Sign In →</button>
+    </form>
+    <div id="loginMsg" class="login-msg"></div>
+  </div>
+</div>
+
+<!-- ===== DASHBOARD ===== -->
+<div id="dashboard">
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="icon">☁️</span>
+      <div>
+        <h2>Cloud Computing <span>315325 · 5th Sem</span></h2>
+      </div>
+    </div>
+    <div class="nav-right">
+      <span class="user" id="navUser">Student</span>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="nav-label">Main</div>
+      <div class="nav-item active" data-page="home" onclick="showPage('home',this)">
+        <span class="emoji">🏠</span> Home
+      </div>
+      <div class="nav-item" data-page="syllabus" onclick="showPage('syllabus',this)">
+        <span class="emoji">📖</span> Syllabus
+      </div>
+      <div class="nav-item" data-page="notes" onclick="showPage('notes',this)">
+        <span class="emoji">📚</span> Notes
+      </div>
+
+      <div class="nav-label">Portals</div>
+      <div class="nav-item" data-page="attendance" onclick="showPage('attendance',this)">
+        <span class="emoji">📊</span> Attendance
+      </div>
+      <div class="nav-item" data-page="assignments" onclick="showPage('assignments',this)">
+        <span class="emoji">📝</span> Assignments
+      </div>
+      <div class="nav-item" data-page="results" onclick="showPage('results',this)">
+        <span class="emoji">📈</span> Results
+      </div>
+      <div class="nav-item" data-page="timetable" onclick="showPage('timetable',this)">
+        <span class="emoji">🕐</span> Timetable
+      </div>
+      <div class="nav-item" data-page="feedback" onclick="showPage('feedback',this)">
+        <span class="emoji">💬</span> Feedback
+      </div>
+    </div>
+
+    <!-- Content Area -->
+    <div class="content">
+
+      <!-- ===== HOME ===== -->
+      <div class="page" id="page-home">
+        <div class="hero">
+          <h2>Welcome back, <span id="heroName">Student</span>! 👋</h2>
+          <p>Diploma in Computer Science — Cloud Computing Department</p>
+          <div class="course-code">📘 315325 · K Scheme · Semester 5</div>
+        </div>
+        <div class="stats">
+          <div class="stat-card"><div class="stat-icon">📖</div><div class="stat-num">5</div><div class="stat-label">Units</div></div>
+          <div class="stat-card"><div class="stat-icon">📝</div><div class="stat-num">2</div><div class="stat-label">Pending</div></div>
+          <div class="stat-card"><div class="stat-icon">📊</div><div class="stat-num">88%</div><div class="stat-label">Attendance</div></div>
+          <div class="stat-card"><div class="stat-icon">📈</div><div class="stat-num">78%</div><div class="stat-label">Avg Marks</div></div>
+        </div>
+        <div class="page-header"><h1>📢 Announcements</h1></div>
+        <div class="announcement">
+          <div><h4>Cloud Computing Lab Practical Exam — Batch A</h4><p>Carry your lab record and college ID.</p></div>
+          <div class="date">Oct 12, 2026</div>
+        </div>
+        <div class="announcement">
+          <div><h4>Unit IV — Security in Cloud Computing notes uploaded</h4><p>Download from the Notes section.</p></div>
+          <div class="date">Oct 8, 2026</div>
+        </div>
+        <div class="announcement">
+          <div><h4>Internal Assessment II — Timetable Released</h4><p>Check Results portal for IA-2 schedule.</p></div>
+          <div class="date">Oct 5, 2026</div>
+        </div>
+      </div>
+
+      <!-- ===== SYLLABUS ===== -->
+      <div class="page" id="page-syllabus" style="display:none;">
+        <div class="page-header">
+          <h1>📖 Syllabus — Cloud Computing (315325)</h1>
+          <p>MSBTE K Scheme · 5th Semester · Click a unit to expand</p>
+        </div>
+        <div id="syllabusContainer"></div>
+      </div>
+
+      <!-- ===== NOTES ===== -->
+      <div class="page" id="page-notes" style="display:none;">
+        <div class="page-header">
+          <h1>📚 Study Materials & Notes</h1>
+          <p>Download unit-wise notes, question papers & references</p>
+        </div>
+        <div id="notesContainer"></div>
+      </div>
+
+      <!-- ===== ATTENDANCE ===== -->
+      <div class="page" id="page-attendance" style="display:none;">
+        <div class="page-header"><h1>📊 Attendance</h1><p>Your subject-wise attendance records</p></div>
+        <table class="data-table">
+          <thead><tr><th>Subject</th><th>Attended</th><th>Total</th><th>Percentage</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Cloud Computing</td><td>38</td><td>42</td><td><b>90%</b></td><td><span class="badge badge-green">Eligible</span></td></tr>
+            <tr><td>Python Programming</td><td>35</td><td>40</td><td><b>87%</b></td><td><span class="badge badge-green">Eligible</span></td></tr>
+            <tr><td>Web Technology</td><td>36</td><td>40</td><td><b>90%</b></td><td><span class="badge badge-green">Eligible</span></td></tr>
+            <tr><td>Software Engineering</td><td>33</td><td>38</td><td><b>86%</b></td><td><span class="badge badge-green">Eligible</span></td></tr>
+            <tr><td>Soft Skills</td><td>18</td><td>20</td><td><b>90%</b></td><td><span class="badge badge-green">Eligible</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ===== ASSIGNMENTS ===== -->
+      <div class="page" id="page-assignments" style="display:none;">
+        <div class="page-header"><h1>📝 Assignments</h1><p>Track your submissions & deadlines</p></div>
+        <table class="data-table">
+          <thead><tr><th>Assignment</th><th>Subject</th><th>Due Date</th><th>Status</th><th>Marks</th></tr></thead>
+          <tbody>
+            <tr><td>Cloud Service Models Comparison</td><td>Cloud Computing</td><td>Oct 10</td><td><span class="badge badge-orange">Pending</span></td><td>—</td></tr>
+            <tr><td>VM Creation using VMWare</td><td>Cloud Computing</td><td>Oct 15</td><td><span class="badge badge-orange">Pending</span></td><td>—</td></tr>
+            <tr><td>File Handling & Exceptions</td><td>Python</td><td>Oct 8</td><td><span class="badge badge-green">Submitted</span></td><td>8/10</td></tr>
+            <tr><td>Responsive Web Page</td><td>Web Tech</td><td>Oct 5</td><td><span class="badge badge-green">Submitted</span></td><td>9/10</td></tr>
+            <tr><td>SRS Document</td><td>Software Engg</td><td>Oct 3</td><td><span class="badge badge-green">Submitted</span></td><td>9/10</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ===== RESULTS ===== -->
+      <div class="page" id="page-results" style="display:none;">
+        <div class="page-header"><h1>📈 Results — Internal Assessment I</h1><p>Subject-wise internal marks (out of 20)</p></div>
+        <table class="data-table">
+          <thead><tr><th>Subject</th><th>Code</th><th>IA-1 (20)</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Cloud Computing</td><td>315325</td><td><b>17</b></td><td><span class="badge badge-green">Pass</span></td></tr>
+            <tr><td>Python Programming</td><td>315326</td><td><b>16</b></td><td><span class="badge badge-green">Pass</span></td></tr>
+            <tr><td>Web Technology</td><td>315327</td><td><b>18</b></td><td><span class="badge badge-green">Pass</span></td></tr>
+            <tr><td>Software Engineering</td><td>315328</td><td><b>15</b></td><td><span class="badge badge-green">Pass</span></td></tr>
+            <tr><td>Soft Skills</td><td>315329</td><td><b>14</b></td><td><span class="badge badge-green">Pass</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ===== TIMETABLE ===== -->
+      <div class="page" id="page-timetable" style="display:none;">
+        <div class="page-header"><h1>🕐 Weekly Timetable</h1><p>Monday to Friday class schedule</p></div>
+        <table class="data-table">
+          <thead><tr><th>Day</th><th>9:00–10:00</th><th>10:00–11:00</th><th>11:15–12:15</th><th>1:00–2:00</th><th>2:00–3:00</th></tr></thead>
+          <tbody>
+            <tr><td><b>Mon</b></td><td>Cloud Computing</td><td>Python</td><td>Web Tech</td><td colspan="2">Cloud Lab</td></tr>
+            <tr><td><b>Tue</b></td><td>Software Engg</td><td>Cloud Computing</td><td>Python</td><td colspan="2">Web Tech Lab</td></tr>
+            <tr><td><b>Wed</b></td><td>Python</td><td>Web Tech</td><td>Software Engg</td><td colspan="2">Python Lab</td></tr>
+            <tr><td><b>Thu</b></td><td>Cloud Computing</td><td>Software Engg</td><td>Soft Skills</td><td colspan="2">Mini Project</td></tr>
+            <tr><td><b>Fri</b></td><td>Web Tech</td><td>Soft Skills</td><td>Cloud Computing</td><td>Seminar</td><td>Library</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ===== FEEDBACK ===== -->
+      <div class="page" id="page-feedback" style="display:none;">
+        <div class="page-header"><h1>💬 Submit Feedback</h1><p>Share your feedback with the faculty</p></div>
+        <div class="fb-form">
+          <label>Select Subject</label>
+          <select>
+            <option>Cloud Computing (315325)</option>
+            <option>Python Programming</option>
+            <option>Web Technology</option>
+            <option>Software Engineering</option>
+            <option>Soft Skills</option>
+          </select>
+          <label>Rating</label>
+          <select>
+            <option>⭐⭐⭐⭐⭐ Excellent</option>
+            <option>⭐⭐⭐⭐ Very Good</option>
+            <option>⭐⭐⭐ Good</option>
+            <option>⭐⭐ Average</option>
+            <option>⭐ Needs Improvement</option>
+          </select>
+          <label>Your Feedback</label>
+          <textarea placeholder="Write your comments here..."></textarea>
+          <button class="btn btn-primary" style="width:auto; padding:10px 28px;" onclick="alert('✅ Feedback submitted successfully! Thank you.')">Submit Feedback</button>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /layout -->
+
+  <!-- Mobile Bottom Nav -->
+  <div class="mobile-nav">
+    <div class="mob-item active" onclick="showPage('home',null,'home')"><span class="emoji">🏠</span>Home</div>
+    <div class="mob-item" onclick="showPage('syllabus',null,'syllabus')"><span class="emoji">📖</span>Syllabus</div>
+    <div class="mob-item" onclick="showPage('notes',null,'notes')"><span class="emoji">📚</span>Notes</div>
+    <div class="mob-item" onclick="showPage('attendance',null,'attendance')"><span class="emoji">📊</span>Attendance</div>
+    <div class="mob-item" onclick="showPage('results',null,'results')"><span class="emoji">📈</span>Results</div>
+  </div>
+</div>
+
+<script>
+// ===== FULL SYLLABUS DATA =====
+const units = [
+  {
+    num: 1, title: "Fundamentals of Cloud Computing", color: "u1", icon: "☁️",
+    topics: [
+      { id: "1.1", text: "Definition of Cloud Computing, Characteristics of Cloud Computing" },
+      { id: "1.2", text: "Cloud Deployment Models (Introduction, Advantages & Disadvantages): Public Cloud, Private Cloud, Community Cloud, Hybrid Cloud" },
+      { id: "1.3", text: "Cloud Service Models (Function, Advantages, Disadvantages): IaaS, PaaS, SaaS" },
+      { id: "1.4", text: "Cloud Cost Benefits" },
+      { id: "1.5", text: "Architectural and Infrastructural Components of Cloud Computing" }
+    ],
+    tlos: [
+      { id: "TLO 1.1", text: "Define Cloud Computing and list its characteristics" },
+      { id: "TLO 1.2", text: "Compare Cloud Deployment Models with advantages and disadvantages" },
+      { id: "TLO 1.3", text: "Explain Cloud Service Models (IaaS, PaaS, SaaS)" },
+      { id: "TLO 1.4", text: "Describe Cloud cost benefits for given scenario" },
+      { id: "TLO 1.5", text: "Draw and explain architecture of Cloud Computing" }
+    ]
+  },
+  {
+    num: 2, title: "Virtualization", color: "u2", icon: "🖥️",
+    topics: [
+      { id: "2.1", text: "Introduction, Virtualization Reference Model, Characteristics of Virtualized Environment" },
+      { id: "2.2", text: "Types of Virtualization: Storage, Network, Desktop, Application Server Virtualization" },
+      { id: "2.3", text: "Technology Examples — VMWare: Full Virtualization Reference Model; Xen: Architecture and Guest OS Management" },
+      { id: "2.4", text: "Definition and Life Cycle of Virtual Machine (VM), VM Migration: Concepts & Techniques, VM Consolidation: Concepts, VM Management: Concepts" },
+      { id: "2.5", text: "Advantages and Disadvantages of Virtualization" }
+    ],
+    tlos: [
+      { id: "TLO 2.1", text: "Explain features of Virtualization" },
+      { id: "TLO 2.2", text: "Compare characteristics of Virtualization types" },
+      { id: "TLO 2.3", text: "Write steps to build a virtual machine using VMWare on given OS" },
+      { id: "TLO 2.4", text: "Differentiate VM Migration, Consolidation and Management" },
+      { id: "TLO 2.5", text: "Explain advantages and disadvantages of Virtualization" }
+    ]
+  },
+  {
+    num: 3, title: "Cloud Storage, Monitoring & Management", color: "u3", icon: "💾",
+    topics: [
+      { id: "3.1", text: "Cloud Storage System Architecture" },
+      { id: "3.2", text: "Virtualized Data Centre (VDC) Architecture, VDC Environment, Server, Storage, Networking, Desktop and Application Virtualization Techniques and Benefits" },
+      { id: "3.3", text: "Cloud File Systems — Google File System (GFS): Components, Features, Advantages & Disadvantages; Hadoop Distributed File System (HDFS): Heartbeat, Balancing, Replication, Features & Limitations" },
+      { id: "3.4", text: "Service Provider and Users, Architecture of Federated Cloud Computing: Model and Explanation" },
+      { id: "3.5", text: "Service Level Agreement (SLA) — SLA Management: 5 Phases (Feasibility, On-Boarding, Pre-production, Production, Termination); Types: Infrastructure SLA & Application SLA; SLA Life Cycle: 5 Phases (Contract Definition, Publishing & Discovery, Negotiation, Operationalization, De-commissioning)" },
+      { id: "3.6", text: "Cloud Service Life Cycle Phases: Service Planning, Service Creation, Service Operation, Service Termination" }
+    ],
+    tlos: [
+      { id: "TLO 3.1", text: "Explain Cloud storage system architecture" },
+      { id: "TLO 3.2", text: "Write steps to design storage system for given Cloud set-up" },
+      { id: "TLO 3.3", text: "Compare GFS and HDFS" },
+      { id: "TLO 3.4", text: "Describe components of Federated Cloud Computing" },
+      { id: "TLO 3.5", text: "Compare different types of Service Level Agreement (SLA)" },
+      { id: "TLO 3.6", text: "Describe the Cloud Service Life Cycle" }
+    ]
+  },
+  {
+    num: 4, title: "Security in Cloud Computing", color: "u4", icon: "🔒",
+    topics: [
+      { id: "4.1", text: "Cloud Security Concepts: Multi-tenancy, Virtualization, Data Outsourcing and Trust Management, Metadata Security" },
+      { id: "4.2", text: "Cloud Risk: Concept, Types — Policy & Organizational Risks, Technical Risks, Legal Risks" },
+      { id: "4.3", text: "Data Security Technologies, Data Security Risks" },
+      { id: "4.4", text: "Digital Identity and Access Management (IAM)" },
+      { id: "4.5", text: "Content Level Security: Pros & Cons, Features of Security-As-A-Cloud Service" }
+    ],
+    tlos: [
+      { id: "TLO 4.1", text: "Explain security and related risks in Cloud Computing" },
+      { id: "TLO 4.2", text: "Explain key features of Data Security" },
+      { id: "TLO 4.3", text: "Write steps to implement Cloud Data Security" },
+      { id: "TLO 4.4", text: "Explain identity management and access facility of given Cloud set up" },
+      { id: "TLO 4.5", text: "Explain features of Security-As-A-Cloud Service" }
+    ]
+  },
+  {
+    num: 5, title: "Trends in Cloud", color: "u5", icon: "🚀",
+    topics: [
+      { id: "5.1", text: "Cloud Trends in Supporting Ubiquitous Computing" },
+      { id: "5.2", text: "Enabling Technology in IoT: RFID, Sensor Networks, ZigBee Technologies, GPS" },
+      { id: "5.3", text: "Innovative Applications with IoT — Healthcare: ECG Analysis in Cloud; CRM & ERP: Business and Consumer Applications" },
+      { id: "5.4", text: "Benefits of Cloud Platforms: Amazon EC2 & S3, CloudStack, Intercloud, Google App Engine, OpenStack, OpenNebula" }
+    ],
+    tlos: [
+      { id: "TLO 5.1", text: "Explain characteristics of enabling technology with IoT" },
+      { id: "TLO 5.2", text: "Select relevant Cloud platform or application for development" },
+      { id: "TLO 5.3", text: "Describe features of Cloud-based smart devices" },
+      { id: "TLO 5.4", text: "Compare features of various Cloud platforms" }
+    ]
+  }
+];
+
+// ===== RENDER SYLLABUS =====
+const syllabusContainer = document.getElementById('syllabusContainer');
+units.forEach((unit, idx) => {
+  const card = document.createElement('div');
+  card.className = 'unit-card';
+  card.innerHTML = `
+    <div class="unit-header" onclick="toggleUnit(this)">
+      <div class="left">
+        <div class="unit-num ${unit.color}">${unit.icon}</div>
+        <div>
+          <h3>Unit ${unit.num} — ${unit.title}</h3>
+          <div class="sub">${unit.topics.length} Topics · ${unit.tlos.length} TLOs</div>
+        </div>
+      </div>
+      <span class="arrow">▼</span>
+    </div>
+    <div class="unit-body">
+      <div class="topic-section">
+        <h4>📋 Topics</h4>
+        <ul class="topic-list">
+          ${unit.topics.map(t => `<li><b>${t.id}</b> — ${t.text}</li>`).join('')}
+        </ul>
+      </div>
+      <div class="topic-section">
+        <h4>🎯 Theory Learning Outcomes (TLOs)</h4>
+        <ul class="topic-list">
+          ${unit.tlos.map(t => `<li><span class="tlo-badge">${t.id}</span> ${t.text}</li>`).join('')}
+        </ul>
+      </div>
+    </div>
+  `;
+  syllabusContainer.appendChild(card);
+});
+
+// ===== RENDER NOTES =====
+const notesContainer = document.getElementById('notesContainer');
+units.forEach(unit => {
+  const noteCard = document.createElement('div');
+  noteCard.className = 'note-card';
+  noteCard.innerHTML = `
+    <div class="note-info">
+      <div class="note-icon">${unit.icon}</div>
+      <div>
+        <h4>Unit ${unit.num} — ${unit.title}</h4>
+        <p>${unit.topics.length} topics · PDF Notes</p>
+      </div>
+    </div>
+    <button class="btn-download" onclick="alert('📄 Download will start shortly...\\nUnit ${unit.num}: ${unit.title}')">📥 Download</button>
+  `;
+  notesContainer.appendChild(noteCard);
+});
+
+// Add extra resources
+const extras = [
+  { icon: "📄", title: "Previous Year Question Papers (2023–2025)", sub: "Solved & unsolved papers" },
+  { icon: "📑", title: "Lab Manual — Cloud Computing Practicals", sub: "All practical experiments" },
+  { icon: "📊", title: "MSBTE Model Answer Papers", sub: "Official model answers" },
+  { icon: "🔗", title: "Reference Links & Video Tutorials", sub: "YouTube, NPTEL, Coursera links" }
+];
+extras.forEach(e => {
+  const card = document.createElement('div');
+  card.className = 'note-card';
+  card.innerHTML = `
+    <div class="note-info">
+      <div class="note-icon">${e.icon}</div>
+      <div><h4>${e.title}</h4><p>${e.sub}</p></div>
+    </div>
+    <button class="btn-download" onclick="alert('📄 Download will start shortly...')">📥 Download</button>
+  `;
+  notesContainer.appendChild(card);
+});
+
+// ===== LOGIN =====
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const sid = document.getElementById('studentId').value.trim();
+  const pwd = document.getElementById('password').value.trim();
+  if (!sid || !pwd) {
+    const msg = document.getElementById('loginMsg');
+    msg.className = 'login-msg show';
+    msg.textContent = 'Please fill in all fields.';
+    return;
+  }
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  document.getElementById('navUser').textContent = sid;
+  document.getElementById('heroName').textContent = sid;
+});
+
+function logout() {
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('loginForm').reset();
+  document.getElementById('loginMsg').className = 'login-msg';
+}
+
+// ===== PAGE NAVIGATION =====
+function showPage(pageId, sidebarItem, mobileId) {
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+  document.getElementById('page-' + pageId).style.display = 'block';
+
+  // Sidebar active
+  document.querySelectorAll('.sidebar .nav-item').forEach(n => n.classList.remove('active'));
+  if (sidebarItem) {
+    sidebarItem.classList.add('active');
+  } else {
+    document.querySelectorAll('.sidebar .nav-item').forEach(n => {
+      if (n.dataset.page === pageId) n.classList.add('active');
+    });
+  }
+
+  // Mobile nav active
+  document.querySelectorAll('.mob-item').forEach(m => m.classList.remove('active'));
+  if (mobileId) {
+    document.querySelectorAll('.mob-item').forEach(m => {
+      if (m.textContent.toLowerCase().includes(mobileId)) m.classList.add('active');
+    });
+  }
+}
+
+// ===== UNIT TOGGLE =====
+function toggleUnit(header) {
+  const body = header.nextElementSibling;
+  const isOpen = body.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.unit-body').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('.unit-header').forEach(h => h.classList.remove('open'));
+  if (!isOpen) {
+    body.classList.add('open');
+    header.classList.add('open');
+  }
+}
+</script>
+
+</body>
+</html>
